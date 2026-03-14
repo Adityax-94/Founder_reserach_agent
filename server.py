@@ -26,6 +26,10 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder="frontend", static_url_path="")
 CORS(app)
 
+@app.route("/health")
+def health():
+    return "ok", 200
+
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
