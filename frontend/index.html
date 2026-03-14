@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Founder Research Agent</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --accent: #7c6aff;
+    --accent2: #ff6a9b;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+    --success: #4ade80;
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,106,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,106,255,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glow orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.25;
+  }
+  .orb-1 { width: 600px; height: 600px; background: var(--accent); top: -200px; left: -200px; animation: drift 18s ease-in-out infinite alternate; }
+  .orb-2 { width: 400px; height: 400px; background: var(--accent2); bottom: -100px; right: -100px; animation: drift 22s ease-in-out infinite alternate-reverse; }
+
+  @keyframes drift {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(60px, 40px); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── Header ── */
+  header {
+    padding: 48px 0 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo-icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .logo-text h1 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .logo-text p {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+
+  .badge {
+    margin-left: auto;
+    background: rgba(124,106,255,0.15);
+    border: 1px solid rgba(124,106,255,0.3);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-family: var(--font-mono);
+  }
+
+  /* ── Search card ── */
+  .search-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .search-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.5;
+  }
+
+  .search-card h2 {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+
+  .search-card h2 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .search-card p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 28px;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-group.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-family: var(--font-mono);
+  }
+
+  input, select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 15px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124,106,255,0.12);
+  }
+
+  input::placeholder { color: var(--muted); }
+
+  select option { background: var(--surface2); }
+
+  .btn-research {
+    width: 100%;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, var(--accent), #9c6aff);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    letter-spacing: 0.3px;
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-research:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(124,106,255,0.4);
+  }
+
+  .btn-research:active:not(:disabled) { transform: translateY(0); }
+
+  .btn-research:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* ── Progress ── */
+  .progress-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    display: none;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .progress-card.visible { display: flex; }
+
+  .spinner {
+    width: 36px; height: 36px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .progress-info h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .progress-info p  { font-size: 13px; color: var(--muted); font-family: var(--font-mono); }
+
+  .progress-bar-wrap {
+    margin-left: auto;
+    width: 120px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 4px;
+    width: 30%;
+    animation: progress-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes progress-pulse {
+    0%   { width: 20%; }
+    50%  { width: 75%; }
+    100% { width: 20%; }
+  }
+
+  /* ── Report ── */
+  .report-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 32px;
+    display: none;
+    animation: fadeUp 0.4s ease;
+  }
+
+  .report-card.visible { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .report-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .report-header h3 { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+
+  .stats {
+    margin-left: auto;
+    display: flex;
+    gap: 20px;
+  }
+
+  .stat {
+    text-align: right;
+  }
+
+  .stat-value {
+    font-size: 20px;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 3px;
+  }
+
+  .report-tabs {
+    display: flex;
+    padding: 0 32px;
+    border-bottom: 1px solid var(--border);
+    gap: 4px;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 14px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s, border-color 0.15s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-btn:hover:not(.active) { color: var(--text); }
+
+  .tab-content { display: none; padding: 32px; }
+  .tab-content.active { display: block; }
+
+  /* Markdown styles */
+  .markdown h1 { font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
+  .markdown h2 {
+    font-size: 16px; font-weight: 700; margin: 28px 0 12px;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--accent); font-family: var(--font-mono);
+  }
+  .markdown h3 { font-size: 16px; font-weight: 700; margin: 20px 0 8px; }
+  .markdown p  { font-size: 15px; line-height: 1.75; color: #c8c8d8; margin-bottom: 12px; font-weight: 400; }
+  .markdown ul { padding-left: 20px; margin-bottom: 12px; }
+  .markdown li { font-size: 14px; line-height: 1.7; color: #c8c8d8; margin-bottom: 4px; font-weight: 400; }
+  .markdown strong { color: var(--text); font-weight: 700; }
+  .markdown em { color: var(--muted); font-style: italic; }
+  .markdown blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 12px 20px;
+    margin: 16px 0;
+    background: rgba(124,106,255,0.06);
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: #c8c8d8;
+  }
+  .markdown a { color: var(--accent); text-decoration: none; }
+  .markdown a:hover { text-decoration: underline; }
+  .markdown hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+  .markdown code {
+    font-family: var(--font-mono);
+    background: var(--surface2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--accent2);
+  }
+
+  /* JSON viewer */
+  .json-viewer {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.6;
+    color: #a8b8c8;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  /* Past reports */
+  .past-reports { margin-bottom: 32px; }
+
+  .past-reports h2 {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    margin-bottom: 16px;
+  }
+
+  .report-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .report-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+
+  .report-item:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+  }
+
+  .report-item-icon {
+    width: 36px; height: 36px;
+    background: rgba(124,106,255,0.12);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .report-item-info h4 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .report-item-info p  { font-size: 12px; color: var(--muted); line-height: 1.4; font-weight: 400; }
+
+  .report-item-date {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+  }
+
+  /* Error */
+  .error-card {
+    background: rgba(255, 80, 80, 0.08);
+    border: 1px solid rgba(255, 80, 80, 0.25);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #ff8080;
+    font-size: 14px;
+    margin-bottom: 24px;
+    display: none;
+    font-family: var(--font-mono);
+  }
+
+  .error-card.visible { display: block; }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
+
+  @media (max-width: 600px) {
+    .form-row { grid-template-columns: 1fr; }
+    .stats { gap: 12px; }
+    .report-tabs { padding: 0 16px; overflow-x: auto; }
+    .tab-content { padding: 20px; }
+    .search-card { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="logo-icon">🔍</div>
+    <div class="logo-text">
+      <h1>Founder Research Agent</h1>
+      <p>Autonomous intelligence gathering · LangGraph + Groq</p>
+    </div>
+    <span class="badge">LangGraph</span>
+  </header>
+
+  <!-- Search card -->
+  <div class="search-card">
+    <h2>Research any <span>founder or CEO</span></h2>
+    <p>The agent autonomously browses the web, extracts facts, maintains memory across iterations, and synthesises a structured intelligence report.</p>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Founder / CEO name</label>
+        <input type="text" id="input-name" placeholder="e.g. Sam Altman" />
+      </div>
+      <div class="form-group">
+        <label>Context (optional)</label>
+        <input type="text" id="input-context" placeholder="e.g. CEO of OpenAI" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Research depth</label>
+        <select id="input-iterations">
+          <option value="1">Quick  — 1 iteration</option>
+          <option value="2" selected>Standard — 2 iterations</option>
+          <option value="3">Deep — 3 iterations</option>
+          <option value="4">Thorough — 4 iterations</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-research" id="btn-research" onclick="startResearch()">
+      ⚡ Start Research
+    </button>
+  </div>
+
+  <!-- Error -->
+  <div class="error-card" id="error-card"></div>
+
+  <!-- Progress -->
+  <div class="progress-card" id="progress-card">
+    <div class="spinner"></div>
+    <div class="progress-info">
+      <h3 id="progress-name">Researching...</h3>
+      <p id="progress-msg">Initialising agent...</p>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar"></div>
+    </div>
+  </div>
+
+  <!-- Report output -->
+  <div class="report-card" id="report-card">
+    <div class="report-header">
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-family:var(--font-mono);margin-bottom:4px">Research complete</div>
+        <h3 id="report-title">—</h3>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="stat-facts">—</div>
+          <div class="stat-label">Facts</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="stat-pages">—</div>
+          <div class="stat-label">Pages</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-tabs">
+      <button class="tab-btn active" onclick="switchTab('report', this)">Report</button>
+      <button class="tab-btn" onclick="switchTab('json', this)">JSON Profile</button>
+    </div>
+
+    <div class="tab-content active" id="tab-report">
+      <div class="markdown" id="report-markdown"></div>
+    </div>
+
+    <div class="tab-content" id="tab-json">
+      <div class="json-viewer" id="report-json"></div>
+    </div>
+  </div>
+
+  <!-- Past reports -->
+  <div class="past-reports" id="past-reports">
+    <h2>Past reports</h2>
+    <div class="report-list" id="report-list">
+      <div class="empty">No reports yet. Run your first research above.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- marked.js for markdown rendering -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script>
+  let _pollInterval = null;
+
+  // ── Load past reports on startup ──────────────────────────────────────────
+  async function loadPastReports() {
+    try {
+      const res = await fetch('/api/reports');
+      const reports = await res.json();
+      const list = document.getElementById('report-list');
+
+      if (!reports.length) {
+        list.innerHTML = '<div class="empty">No reports yet. Run your first research above.</div>';
+        return;
+      }
+
+      list.innerHTML = reports.map(r => `
+        <div class="report-item" onclick="loadReport('${r.filename}', '${r.name}')">
+          <div class="report-item-icon">👤</div>
+          <div class="report-item-info">
+            <h4>${r.name}</h4>
+            <p>${r.summary || 'Click to view full report'}</p>
+          </div>
+          <div class="report-item-date">${r.modified.slice(0,10)}</div>
+        </div>
+      `).join('');
+    } catch(e) {
+      console.error('Could not load past reports', e);
+    }
+  }
+
+  // ── Start research ────────────────────────────────────────────────────────
+  async function startResearch() {
+    const name       = document.getElementById('input-name').value.trim();
+    const context    = document.getElementById('input-context').value.trim();
+    const iterations = document.getElementById('input-iterations').value;
+
+    if (!name) {
+      showError('Please enter a founder or CEO name.');
+      return;
+    }
+
+    hideError();
+    showProgress(name);
+    disableForm(true);
+
+    try {
+      const res = await fetch('/api/research', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, context, iterations: parseInt(iterations) })
+      });
+      const { job_id } = await res.json();
+      pollStatus(job_id, name);
+    } catch(e) {
+      showError('Could not connect to the server. Make sure server.py is running.');
+      hideProgress();
+      disableForm(false);
+    }
+  }
+
+  // ── Poll job status ───────────────────────────────────────────────────────
+  function pollStatus(jobId, name) {
+    _pollInterval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/status/${jobId}`);
+        const job = await res.json();
+
+        document.getElementById('progress-msg').textContent = job.progress || 'Working...';
+
+        if (job.status === 'done') {
+          clearInterval(_pollInterval);
+          hideProgress();
+          disableForm(false);
+          showReport(name, job.result);
+          loadPastReports();
+        } else if (job.status === 'error') {
+          clearInterval(_pollInterval);
+          hideProgress();
+          disableForm(false);
+          showError('Agent error: ' + job.error);
+        }
+      } catch(e) {
+        clearInterval(_pollInterval);
+        hideProgress();
+        disableForm(false);
+        showError('Lost connection to server.');
+      }
+    }, 2000);
+  }
+
+  // ── Show report ───────────────────────────────────────────────────────────
+  function showReport(name, result) {
+    document.getElementById('report-title').textContent = name;
+    document.getElementById('stat-facts').textContent  = result.facts_count || '—';
+    document.getElementById('stat-pages').textContent  = result.pages_count || '—';
+
+    // Render markdown
+    const md = result.report_markdown || '_No report content._';
+    document.getElementById('report-markdown').innerHTML = marked.parse(md);
+
+    // Show JSON
+    document.getElementById('report-json').textContent =
+      JSON.stringify(result.profile || {}, null, 2);
+
+    document.getElementById('report-card').classList.add('visible');
+    document.getElementById('report-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── Load past report ──────────────────────────────────────────────────────
+  async function loadReport(filename, name) {
+    try {
+      const mdRes   = await fetch(`/api/report/${filename}`);
+      const mdText  = await mdRes.text();
+      const jsonRes = await fetch(`/api/report/${filename}`);
+
+      document.getElementById('report-title').textContent = name;
+      document.getElementById('stat-facts').textContent  = '—';
+      document.getElementById('stat-pages').textContent  = '—';
+      document.getElementById('report-markdown').innerHTML = marked.parse(mdText);
+      document.getElementById('report-json').textContent = mdText;
+      document.getElementById('report-card').classList.add('visible');
+      document.getElementById('report-card').scrollIntoView({ behavior: 'smooth' });
+
+      // Switch to report tab
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelector('.tab-btn').classList.add('active');
+      document.getElementById('tab-report').classList.add('active');
+    } catch(e) {
+      showError('Could not load report.');
+    }
+  }
+
+  // ── Tab switching ─────────────────────────────────────────────────────────
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+  }
+
+  // ── UI helpers ────────────────────────────────────────────────────────────
+  function showProgress(name) {
+    document.getElementById('progress-name').textContent = `Researching ${name}...`;
+    document.getElementById('progress-card').classList.add('visible');
+  }
+
+  function hideProgress() {
+    document.getElementById('progress-card').classList.remove('visible');
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-card');
+    el.textContent = '⚠ ' + msg;
+    el.classList.add('visible');
+  }
+
+  function hideError() {
+    document.getElementById('error-card').classList.remove('visible');
+  }
+
+  function disableForm(disabled) {
+    document.getElementById('btn-research').disabled = disabled;
+    document.getElementById('input-name').disabled = disabled;
+    document.getElementById('btn-research').textContent = disabled ? '⏳ Researching...' : '⚡ Start Research';
+  }
+
+  // ── Enter key support ─────────────────────────────────────────────────────
+  document.getElementById('input-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') startResearch();
+  });
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  loadPastReports();
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+# Core LangChain / LangGraph stack
+langchain>=0.2.0
+langchain-google-genai>=1.0.0
+langchain-core>=0.2.0
+langgraph>=0.1.0
+
+# OpenAI SDK
+openai>=1.30.0
+
+# Search
+tavily-python>=0.3.0          # primary search (needs TAVILY_API_KEY)
+duckduckgo-search>=6.1.0      # fallback search (no key needed)
+
+# Scraping
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=5.2.0
+
+# Utilities
+python-dotenv>=1.0.0
+colorlog>=6.8.0
+
+dotenv
+
+# Web server
+flask>=3.0.0
+flask-cors>=4.0.0
+
+

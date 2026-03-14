@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  research-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: founder-research-agent:latest
+    container_name: founder_agent
+
+    # Mount output directory so reports are available on host
+    volumes:
+      - ./output:/app/output
+
+    # Pass API keys from host environment or a .env file
+    env_file:
+      - .env
+
+    environment:
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+
+    # Default: research Sam Altman with 3 iterations
+    # Override with: docker compose run research-agent "Elon Musk" --iterations 5
+    command: ["Sam Altman", "--context", "CEO of OpenAI", "--iterations", "3", "--print-report"]
+
+    # Resource limits – adjust based on your infra
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 1G
