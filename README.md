@@ -4,7 +4,7 @@ An autonomous, LangGraph-powered agent that researches a founder or CEO by brows
 
 ---
 ## Preview
-![Founder Research Agent UI](screenshot.png)
+![Founder Research Agent UI](Screenshot.png)
 
 ## Architecture
 
