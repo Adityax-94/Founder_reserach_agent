@@ -3,6 +3,8 @@
 An autonomous, LangGraph-powered agent that researches a founder or CEO by browsing the web, following links, extracting facts, maintaining memory, and producing a structured Markdown + JSON report.
 
 ---
+## Preview
+![Founder Research Agent UI](screenshot.png)
 
 ## Architecture
 
