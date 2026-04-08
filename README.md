@@ -6,6 +6,14 @@ An autonomous, LangGraph-powered agent that researches a founder or CEO by brows
 ## Preview
 ![Founder Research Agent UI](Screenshot.png)
 
+---
+## Live demo
+
+Live interactive model of this project powered by Render...
+
+👉 [Live Application](https://founder-reserach-agent-1.onrender.com/)
+
+---
 ## Architecture
 
 ```
