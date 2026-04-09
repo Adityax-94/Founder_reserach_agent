@@ -608,12 +608,13 @@
 <!-- marked.js for markdown rendering -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 <script>
+  const BASE_URL = 'https://your-app.up.railway.app';
   let _pollInterval = null;
 
   // ── Load past reports on startup ──────────────────────────────────────────
   async function loadPastReports() {
     try {
-      const res = await fetch('/api/reports');
+      const res = await fetch(BASE_URL + '/api/reports');
       const reports = await res.json();
       const list = document.getElementById('report-list');
 
@@ -653,7 +654,7 @@
     disableForm(true);
 
     try {
-      const res = await fetch('/api/research', {
+      const res = await fetch(BASE_URL + '/api/research', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, context, iterations: parseInt(iterations) })
@@ -671,7 +672,7 @@
   function pollStatus(jobId, name) {
     _pollInterval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/status/${jobId}`);
+       const res = await fetch(`${BASE_URL}/api/status/${jobId}`);
         const job = await res.json();
 
         document.getElementById('progress-msg').textContent = job.progress || 'Working...';
@@ -718,7 +719,7 @@
   // ── Load past report ──────────────────────────────────────────────────────
   async function loadReport(filename, name) {
     try {
-      const mdRes   = await fetch(`/api/report/${filename}`);
+      const mdRes = await fetch(`${BASE_URL}/api/report/${filename}`);
       const mdText  = await mdRes.text();
       const jsonRes = await fetch(`/api/report/${filename}`);
 
