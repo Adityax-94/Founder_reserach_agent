@@ -11,7 +11,7 @@ An autonomous, LangGraph-powered agent that researches a founder or CEO by brows
 
 Live interactive model of this project powered by Render...
 
-👉 [Live Application](https://founder-reserach-agent-1.onrender.com/)
+👉 [Live Application](https://founder-reserach-agent.vercel.app/)
 
 ---
 ## Architecture
