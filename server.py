@@ -71,6 +71,8 @@ def _run_research(job_id: str, target_name: str, context: str, iterations: int):
             }
         )
     except Exception as exc:
+        import traceback
+        traceback.print_exc()  
         _update_job(job_id, status="error", error=str(exc))
 
 
