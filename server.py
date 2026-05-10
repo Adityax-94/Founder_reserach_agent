@@ -24,7 +24,24 @@ from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder="frontend", static_url_path="")
-CORS(app)
+
+def _parse_cors_origins() -> list[str] | None:
+    raw = os.getenv("CORS_ORIGINS", "").strip()
+    if not raw:
+        return None
+    return [origin.strip() for origin in raw.split(",") if origin.strip()]
+
+_cors_origins = _parse_cors_origins()
+
+if _cors_origins:
+    CORS(
+        app,
+        resources={r"/api/*": {"origins": _cors_origins}},
+        supports_credentials=True,
+    )
+else:
+    # Default to permissive CORS for local/dev and simple hosted demos.
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 @app.route("/health")
 def health():
