@@ -6,6 +6,8 @@ services:
     startCommand: gunicorn server:app --bind 0.0.0.0:$PORT --workers 1 --timeout 300 --keep-alive 5
     plan: free
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.8
       - key: GROQ_API_KEY
         sync: false
       - key: TAVILY_API_KEY
