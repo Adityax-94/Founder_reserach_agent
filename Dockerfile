@@ -36,5 +36,6 @@ ENV PYTHONUNBUFFERED=1 \
     OPENAI_MODEL=gpt-4o \
     LOG_LEVEL=INFO
 
-ENTRYPOINT ["python", "main.py"]
-CMD ["--help"]
+EXPOSE 5000
+
+CMD ["gunicorn", "server:app", "--bind", "0.0.0.0:5000", "--workers", "1", "--timeout", "300"]
